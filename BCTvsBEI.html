@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BEI vs BCT Course Comparison</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f4f4f4;
+      color: #333;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .semester {
+      background-color: #fff;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 20px 0;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.3s;
+      position: relative;
+    }
+    .semester h2 {
+      cursor: pointer;
+      background-color: #0073e6;
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+      text-align: center;
+      margin: 0;
+      transition: background-color 0.3s;
+    }
+    .badge {
+      background-color: #f44336;
+      color: white;
+      padding: 3px 8px;
+      border-radius: 50%;
+      font-size: 14px;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      animation: badge-pop 0.5s ease-in-out;
+    }
+    @keyframes badge-pop {
+      0% { transform: scale(0); }
+      100% { transform: scale(1); }
+    }
+    .semester-content {
+      padding: 15px;
+      background-color: #f9f9f9;
+      display: none;
+    }
+    .open .semester-content {
+      display: block;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    table th, table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    table th {
+      background-color: #0073e6;
+      color: white;
+    }
+    table tbody tr:hover {
+      background-color: #f1f1f1;
+      cursor: pointer;
+      transform: scale(1.02);
+      transition: all 0.3s ease;
+    }
+    .common {
+      background-color: #c6f6d5;
+      font-weight: bold;
+    }
+    .bei-unique {
+      background-color: #b2f2bb;
+    }
+    .bct-unique {
+      background-color: #bee3f8;
+    }
+    .legend {
+      display: flex;
+      justify-content: space-around;
+      margin: 20px 0;
+    }
+    .legend div {
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+    }
+    .legend div span {
+      width: 15px;
+      height: 15px;
+      margin-right: 8px;
+    }
+    .legend .common-legend span {
+      background-color: #c6f6d5;
+    }
+    .legend .bei-legend span {
+      background-color: #b2f2bb;
+    }
+    .legend .bct-legend span {
+      background-color: #bee3f8;
+    }
+    .search-box {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .search-box input {
+      padding: 10px;
+      width: 50%;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+      font-size: 16px;
+    }
+    .dark-mode {
+      background-color: #333;
+      color: #f0f0f0;
+    }
+    .dark-mode h2 {
+      background-color: #555;
+    }
+    .dark-mode th, 
+    .dark-mode td {
+      color: black !important; /* Forces all text to be black */
+    }
+    .dark-mode table tbody tr:hover {
+      background-color: #444;
+    }
+    .toggle-button {
+      display: block;
+      margin: 0 auto 20px;
+      padding: 10px 20px;
+      background-color: #0073e6;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      text-align: center;
+      transition: background-color 0.3s;
+    }
+    .toggle-button:hover {
+      background-color: #005bb5;
+    }
+    /* Icons */
+    .icon-common::before {
+      content: "✔ ";
+      color: green;
+    }
+    .icon-unique-bei::before {
+      content: "🟢 ";
+    }
+    .icon-unique-bct::before {
+      content: "🔵 ";
+    }
+  </style>
+</head>
+<body>
+
+  <h1>BEI vs BCT Course Comparison</h1>
+
+  <!-- Search Bar -->
+  <div class="search-box">
+    <input type="text" id="search" placeholder="Search for a course...">
+  </div>
+
+  <!-- Toggle Dark Mode Button -->
+  <button class="toggle-button" onclick="toggleDarkMode()">Toggle Dark Mode</button>
+
+  <div class="legend">
+    <div class="common-legend"><span></span>Common Courses</div>
+    <div class="bei-legend"><span></span>BEI Unique Courses</div>
+    <div class="bct-legend"><span></span>BCT Unique Courses</div>
+  </div>
+
+  <div id="course-comparison"></div>
+
+  <script>
+const data = [
+      {
+        semester: "First Semester",
+        courses: [
+          { course: "Engineering Drawing I", bei: "ME 401", bct: "ME 401", type: "common" },
+          { course: "Engineering Physics", bei: "SH 402", bct: "SH 402", type: "common" },
+          { course: "Basic Electrical Engineering", bei: "EE 401", bct: "EE 401", type: "common" },
+          { course: "Computer Programming", bei: "CT 401", bct: "CT 401", type: "common" },
+          { course: "Digital Logic", bei: "EX 502", bct: "-", type: "bei-unique" },
+          { course: "Engineering Mathematics I", bei: "SH 401", bct: "SH 401", type: "common" },
+          { course: "Applied Mechanics", bei: "-", bct: "CE 401", type: "bct-unique" }
+        ]
+      },
+      {
+        semester: "Second Semester",
+        courses: [
+          { course: "Engineering Mathematics II", bei: "SH 451", bct: "SH 451", type: "common" },
+          { course: "Engineering Chemistry", bei: "SH 453", bct: "SH 453", type: "common" },
+          { course: "Workshop Technology", bei: "ME 453", bct: "ME 453", type: "common" },
+          { course: "Object Oriented Programming", bei: "CT 501", bct: "-", type: "bei-unique" },
+          { course: "Microprocessor", bei: "EX 551", bct: "-", type: "bei-unique" },
+          { course: "Electric Circuits and Machines", bei: "-", bct: "EE 501", type: "bct-unique" },
+          { course: "Engineering Drawing II", bei: "-", bct: "ME 451", type: "bct-unique" },
+          { course: "Basic Electronics Engineering", bei: "-", bct: "EX 451", type: "bct-unique" },
+          { course: "Thermodynamics & Heat Transfer", bei: "-", bct: "ME 452", type: "bct-unique" }
+        ]
+      },
+      {
+        semester: "Third Semester",
+        courses: [
+          { course: "Engineering Mathematics III", bei: "SH 501", bct: "SH 501", type: "common" },
+          { course: "Electronics Devices and Circuit", bei: "EX 501", bct: "EX 501", type: "common" },
+          { course: "Probability and Statistics", bei: "SH 602", bct: "-", type: "bei-unique" },
+          { course: "Control System", bei: "EE 602", bct: "-", type: "bei-unique" },
+          { course: "Instrumentation (BEI)", bei: "BEI Specific", bct: "-", type: "bei-unique" },
+          { course: "Electromagnetics", bei: "EX 503", bct: "EX 503", type: "common" },
+          { course: "Theory of Computation", bei: "-", bct: "CT 502", type: "bct-unique" },
+          { course: "Digital Logic", bei: "EX 502", bct: "EX 502", type: "common" }
+        ]
+      },
+      {
+        semester: "Fourth Semester",
+        courses: [
+          { course: "Applied Mathematics", bei: "SH 551", bct: "SH 551", type: "common" },
+          { course: "Numerical Method", bei: "SH 553", bct: "SH 553", type: "common" },
+          { course: "Data Structure and Algorithm", bei: "CT 552", bct: "CT 552", type: "common" },
+          { course: "Computer Graphics", bei: "EX 603", bct: "EX 603", type: "common" },
+          { course: "Discrete Structure", bei: "CT 551", bct: "CT 551", type: "common" },
+          { course: "Microprocessor", bei: "EX 551", bct: "EX 551", type: "common" },
+          { course: "Instrumentation I", bei: "-", bct: "EE 552", type: "bct-unique" },
+          { course: "Electrical Machine", bei: "-", bct: "EE 554", type: "bct-unique" }
+        ]
+      },
+      {
+        semester: "Fifth Semester",
+        courses: [
+          { course: "Communication English", bei: "SH 601", bct: "SH 601", type: "common" },
+          { course: "Computer Organization and Architecture", bei: "CT 603", bct: "CT 603", type: "common" },
+          { course: "Engineering Economics", bei: "CE 655", bct: "CE 655", type: "common" },
+          { course: "Database Management System", bei: "CT 652", bct: "CT 652", type: "common" },
+          { course: "Operating System", bei: "CT 656", bct: "CT 656", type: "common" },
+          { course: "Filter Design", bei: "EX 704", bct: "-", type: "bei-unique" },
+          { course: "Computer Networks", bei: "CT 657", bct: "-", type: "bei-unique" },
+          { course: "Software Engineering", bei: "-", bct: "CT 601", type: "bct-unique" },
+          { course: "Instrumentation II", bei: "-", bct: "EX 602", type: "bct-unique" },
+          { course: "Data Communication", bei: "-", bct: "CT 602", type: "bct-unique" }
+        ]
+      },
+      {
+        semester: "Sixth Semester",
+        courses: [
+          { course: "Communication English", bei: "SH 601", bct: "-", type: "bei-unique" },
+          { course: "Embedded System", bei: "CT 655", bct: "CT 655", type: "common" },
+          { course: "Antenna and Propagation", bei: "EX 653", bct: "-", type: "bei-unique" },
+          { course: "Minor Project", bei: "EX 654", bct: "CT 654", type: "common" },
+          { course: "Communication System I", bei: "EX 652", bct: "-", type: "bei-unique" },
+          { course: "Object Oriented Analysis and Design", bei: "-", bct: "CT 651", type: "bct-unique" },
+          { course: "Artificial Intelligence", bei: "-", bct: "CT 653", type: "bct-unique" },
+          { course: "Database Management System", bei: "-", bct: "CT 652", type: "bct-unique" }
+        ]
+      },
+      {
+        semester: "Seventh Semester",
+        courses: [
+          { course: "Artificial Intelligence", bei: "CT 653", bct: "CT 653", type: "common" },
+          { course: "Digital Signal Analysis and Processing", bei: "CT 704", bct: "CT 704", type: "common" },
+          { course: "Organization and Management", bei: "ME 708", bct: "ME 708", type: "common" },
+          { course: "RF and Microwave Engineering", bei: "EX 752", bct: "-", type: "bei-unique" },
+          { course: "Wireless Communication", bei: "EX 751", bct: "-", type: "bei-unique" },
+          { course: "ICT Project Management", bei: "-", bct: "CT 701", type: "bct-unique" },
+          { course: "Distributed System", bei: "-", bct: "CT 703", type: "bct-unique" },
+          { course: "Computer Networks and Security", bei: "-", bct: "CT 702", type: "bct-unique" }
+        ]
+      },
+      {
+        semester: "Eighth Semester",
+        courses: [
+          { course: "Engineering Professional Practice", bei: "CE 752", bct: "CE 752", type: "common" },
+          { course: "Information Systems", bei: "CT 751", bct: "CT 751", type: "common" },
+          { course: "Digital Signal Processing (DSP)", bei: "EX 753", bct: "-", type: "bei-unique" },
+          { course: "Project (Part B)", bei: "EX 755", bct: "CT 755", type: "common" },
+          { course: "Telecommunication", bei: "EX 703", bct: "-", type: "bei-unique" },
+          { course: "Energy Environment and Society", bei: "EX 701", bct: "EX 701", type: "common" },
+          { course: "Internet and Intranet", bei: "-", bct: "CT 754", type: "bct-unique" },
+          { course: "Simulation and Modelling", bei: "-", bct: "CT 753", type: "bct-unique" }
+        ]
+      }
+    ];
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+    }
+
+    // Create accordion for semesters
+    function createAccordion() {
+      const semesters = document.querySelectorAll('.semester h2');
+      semesters.forEach(semester => {
+        semester.addEventListener('click', function() {
+          const content = this.parentElement.querySelector('.semester-content');
+          this.parentElement.classList.toggle('open');
+        });
+      });
+    }
+
+    // Search functionality: Show only the semester with the matched course
+    document.getElementById('search').addEventListener('input', function() {
+      const searchTerm = this.value.toLowerCase();
+      const semesters = document.querySelectorAll('.semester');
+      let anyMatchFound = false;
+
+      semesters.forEach(semester => {
+        const rows = semester.querySelectorAll('tbody tr');
+        let semesterHasMatch = false;
+
+        rows.forEach(row => {
+          const courseName = row.cells[0].textContent.toLowerCase();
+          if (courseName.includes(searchTerm)) {
+            semesterHasMatch = true; // A match is found in this semester
+          }
+        });
+
+        // If match found, show the entire semester, otherwise hide it
+        if (semesterHasMatch) {
+          semester.classList.add('open');
+          semester.querySelector('.semester-content').style.display = 'block';
+          anyMatchFound = true;
+        } else {
+          semester.classList.remove('open');
+          semester.querySelector('.semester-content').style.display = 'none';
+        }
+      });
+      
+      // If no matches are found, hide all semesters
+      if (!anyMatchFound) {
+        semesters.forEach(semester => {
+          semester.classList.remove('open');
+          semester.querySelector('.semester-content').style.display = 'none';
+        });
+      }
+    });
+
+    // Open Google search on course click
+function bindCourseClicks() {
+  const courseLinks = document.querySelectorAll('tbody tr td:first-child');
+  courseLinks.forEach(course => {
+    course.style.cursor = 'pointer';
+    course.addEventListener('click', function() {
+      const courseName = course.textContent.trim();  // Ensure correct course name is captured
+      window.open(`https://www.google.com/search?q=Details+on+${encodeURIComponent(courseName)}`, '_blank');  // Open in new tab
+    });
+  });
+}
+
+
+    // Render courses (dynamic table generation)
+    const container = document.getElementById('course-comparison');
+
+    data.forEach(semesterData => {
+      const semesterDiv = document.createElement('div');
+      semesterDiv.classList.add('semester');
+      const heading = document.createElement('h2');
+      heading.textContent = semesterData.semester;
+      semesterDiv.appendChild(heading);
+
+      const badge = document.createElement('span');
+      badge.classList.add('badge');
+      badge.textContent = semesterData.courses.length;
+      semesterDiv.appendChild(badge);
+
+      const semesterContent = document.createElement('div');
+      semesterContent.classList.add('semester-content');
+
+      const table = document.createElement('table');
+      table.innerHTML = `
+        <thead>
+          <tr>
+            <th>Course</th>
+            <th>BEI</th>
+            <th>BCT</th>
+            <th>Comparison</th>
+          </tr>
+        </thead>
+      `;
+
+     // Render courses (dynamic table generation)
+const tbody = document.createElement('tbody');
+semesterData.courses.forEach(course => {
+  const row = document.createElement('tr');
+  row.classList.add(course.type);
+  row.innerHTML = `
+    <td><a href="javascript:void(0)" class="course-link">${course.course}</a></td>  <!-- Wrap course name in <a> tag -->
+    <td>${course.bei}</td>
+    <td>${course.bct}</td>
+    <td class="icon-${course.type === 'common' ? 'common' : (course.type === 'bei-unique' ? 'unique-bei' : 'unique-bct')}">
+      ${course.type === 'common' ? '✔' : (course.type === 'bei-unique' ? 'BEI' : 'BCT')}
+    </td>
+  `;
+  tbody.appendChild(row);
+});
+
+
+      table.appendChild(tbody);
+      semesterContent.appendChild(table);
+      semesterDiv.appendChild(semesterContent);
+      container.appendChild(semesterDiv);
+    });
+
+    // Initialize accordion and course clicks
+    createAccordion();
+    bindCourseClicks();
+  </script>
+
+</body>
+</html>
