@@ -4,9 +4,7 @@ Welcome to the BEI vs. BCT Syllabus Comparison repository! This project contains
 
 ## Overview
 
-This tool was developed in just 30 minutes to provide a quick visual and functional comparison between the BEI and BCT courses. The HTML file includes basic CSS and JavaScript necessary to view and interact with the content effectively.
-
- **Visual Representation:** Basic styling and scripting enhance the readability and interaction with the data.
+This was coded in just +-30 minutes to provide a quick visual and functional comparison between the BEI and BCT courses. The HTML file includes basic CSS and JavaScript necessary to view and interact with the content effectively.
 
 ### Limitations:
 
